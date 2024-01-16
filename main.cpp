@@ -1,41 +1,50 @@
-
 #include"queue.h"
-int main() {
-    Queue<int> intQueue;
 
-    int choice;
+int main() {
+    PriorityQueue<int> priorityQueue;
+
+    int value, priority, choice;
 
     do {
-        cout << "1. Enqueue  2. Dequeue  3. Show  4. Exit" << endl;
-        cout << "Enter your choice: ";
+        cout << "1. Insert element with priority\n"
+            "2. Pull highest priority element\n"
+            "3. Peek\n"
+            "4. Show\n"
+            "0. Exit\n"
+            "Enter your choice: ";
         cin >> choice;
 
         switch (choice) {
         case 1:
-            int value;
-            cout << "Enter value to enqueue: ";
+            cout << "Enter value: ";
             cin >> value;
-            intQueue.Enqueue(value);
+            cout << "Enter priority: ";
+            cin >> priority;
+            priorityQueue.InsertWithPriority(value, priority);
             break;
-
         case 2:
-            intQueue.Dequeue();
-            cout << "Dequeue operation performed." << endl;
+            priorityQueue.PullHighestPriorityElement();
+            cout << "Pulled the highest priority element." << endl;
             break;
-
         case 3:
-            cout << "Queue contents: ";
-            intQueue.Show();
+            try {
+                cout << "Peek: " << priorityQueue.Peek() << endl;
+            }
+            catch (const out_of_range& e) {
+                cout << e.what() << endl;
+            }
             break;
-
         case 4:
+            cout << "Current queue:" << endl;
+            priorityQueue.Show();
+            break;
+        case 0:
             cout << "Exiting program." << endl;
             break;
-
         default:
             cout << "Invalid choice. Please enter a valid option." << endl;
         }
-    } while (choice != 4);
+    } while (choice != 0);
 
     return 0;
 }

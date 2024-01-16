@@ -1,76 +1,83 @@
-#ifndef QUEUE_H
-#define QUEUE_H
-
 #include <iostream>
 #include<queue>
 using namespace std;
+
+
 template <typename T>
-class Queue {
+class PriorityQueue {
 private:
-    static const int MAX_SIZE = 100; 
-    T elements[MAX_SIZE];
-    int front; 
-    int rear;  
+    struct QueueNode {
+        T data;
+        int priority;
+        QueueNode* next;
+
+        QueueNode(const T& value, int p) : data(value), priority(p), next(nullptr) {}
+    };
+
+    QueueNode* front;
 
 public:
-    Queue() : front(-1), rear(-1) {}
-
    
+    PriorityQueue() : front(nullptr) {}
+
+    
     bool IsEmpty() const {
-        return front == -1;
+        return front == nullptr;
     }
 
     
-    bool IsFull() const {
-        return (rear + 1) % MAX_SIZE == front;
-    }
+    void InsertWithPriority(const T& value, int priority) {
+        QueueNode* newNode = new QueueNode(value, priority);
 
-    
-    void Enqueue(const T& value) {
-        if (IsFull()) {
-            cout << "Queue is full. Cannot enqueue." << endl;
-            return;
-        }
-
-        if (IsEmpty()) {
-            front = rear = 0;
+        if (IsEmpty() || priority > front->priority) {
+            newNode->next = front;
+            front = newNode;
         }
         else {
-            rear = (rear + 1) % MAX_SIZE;
-        }
+            QueueNode* current = front;
 
-        elements[rear] = value;
+            while (current->next != nullptr && priority <= current->next->priority) {
+                current = current->next;
+            }
+
+            newNode->next = current->next;
+            current->next = newNode;
+        }
     }
 
     
-    void Dequeue() {
-        if (IsEmpty()) {
-            cout << "Queue is empty. Cannot dequeue." << endl;
-            return;
-        }
-
-        if (front == rear) {
-           
-            front = rear = -1;
+    void PullHighestPriorityElement() {
+        if (!IsEmpty()) {
+            QueueNode* temp = front;
+            front = front->next;
+            delete temp;
         }
         else {
-            front = (front + 1) % MAX_SIZE;
+            cout << "Queue is empty. Cannot pull element." << endl;
         }
     }
 
-   
+
+    T Peek() const {
+        if (!IsEmpty()) {
+            return front->data;
+        }
+        else {
+            throw out_of_range("Queue is empty. Cannot peek.");
+        }
+    }
+
+
     void Show() const {
         if (IsEmpty()) {
             cout << "Queue is empty." << endl;
-            return;
         }
-
-        int current = front;
-        while (current != rear) {
-            cout << elements[current] << " ";
-            current = (current + 1) % MAX_SIZE;
+        else {
+            QueueNode* current = front;
+            while (current != nullptr) {
+                cout << "Value: " << current->data << ", Priority: " << current->priority << endl;
+                current = current->next;
+            }
         }
-        cout << elements[rear] << endl;
     }
 };
-#endif
